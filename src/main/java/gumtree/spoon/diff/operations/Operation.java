@@ -6,11 +6,15 @@ import com.github.gumtreediff.actions.model.Update;
 
 import gumtree.spoon.builder.SpoonGumTreeBuilder;
 import spoon.reflect.cu.position.NoSourcePosition;
-import spoon.reflect.declaration.CtClass;
-import spoon.reflect.declaration.CtElement;
-import spoon.reflect.declaration.CtPackage;
-import spoon.reflect.declaration.CtType;
+import spoon.reflect.declaration.*;
 import spoon.reflect.visitor.DefaultJavaPrettyPrinter;
+import spoon.support.reflect.declaration.CtClassImpl;
+import spoon.support.reflect.declaration.CtMethodImpl;
+import spoon.support.reflect.declaration.CtPackageImpl;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class Operation<T extends Action> {
 	private final CtElement node;
@@ -152,4 +156,25 @@ public abstract class Operation<T extends Action> {
 		return true;
 	}
 
+	public String getMethodIdentifier() {
+		CtElement parent = this.getSrcNode();
+		List<String> method_path = new ArrayList();
+		while(parent != null) {
+			if (parent instanceof CtMethodImpl) {
+				method_path.add(((CtMethodImpl) parent).getSignature());
+			}
+			if (parent instanceof CtClassImpl) {
+				method_path.add(((CtClass) parent).getSimpleName());
+			}
+			if (parent instanceof CtPackageImpl) {
+				method_path.add(((CtPackage) parent).getSimpleName());
+			}
+			parent = parent.getParent();
+		}
+		Collections.reverse(method_path);
+		if (method_path.get(0).equals("unnamed package")) {
+			method_path.remove(0);
+		}
+		return String.join(".", method_path);
+	}
 }

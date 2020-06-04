@@ -40,6 +40,7 @@ import spoon.reflect.declaration.CtClass;
 import spoon.reflect.declaration.CtElement;
 import spoon.reflect.declaration.CtType;
 import spoon.reflect.factory.Factory;
+import spoon.reflect.path.CtElementPathBuilder;
 import spoon.support.compiler.VirtualFile;
 import spoon.support.compiler.jdt.JDTBasedSpoonCompiler;
 import spoon.support.compiler.jdt.JDTSnippetCompiler;
@@ -1900,4 +1901,18 @@ public class AstComparatorTest {
 
 	}
 
+	@Test
+	public void testNullPointerLambdaIssue() throws Exception {
+		File s = new File("src/test/resources/examples/854f698cecad7d48b3ffc8a2da118b20e8e330fa/A_PercentilesAggregationBuilder.java");
+		File t = new File("src/test/resources/examples/854f698cecad7d48b3ffc8a2da118b20e8e330fa/B_PercentilesAggregationBuilder.java");
+		AstComparator r = new AstComparator();
+
+		Diff diffOut = r.compare(s, t);
+		Operation op = diffOut.getRootOperations().get(0);
+		String acName = op.getAction().getName();
+		System.out.println(op);
+		System.out.println(acName);
+		System.out.println(op.getMethodIdentifier());
+
+	}
 }
